@@ -23,6 +23,8 @@ def list_assignments(p):
 def upsert_assignment(p, incoming_payload):
     """Create or Edit an assignment"""
     assignment = AssignmentSchema().load(incoming_payload)
+    if assignment.content is None:
+        return APIResponse.respond_error("Content cannot be null", 400)
     assignment.student_id = p.student_id
 
     upserted_assignment = Assignment.upsert(assignment)
@@ -37,7 +39,13 @@ def upsert_assignment(p, incoming_payload):
 def submit_assignment(p, incoming_payload):
     """Submit an assignment"""
     submit_assignment_payload = AssignmentSubmitSchema().load(incoming_payload)
+    assignment = Assignment.query.get(submit_assignment_payload.id)
 
+    # Check if the assignment exists and is in the 'DRAFT' state
+    if not assignment or assignment.state != 'DRAFT':
+        return APIResponse.respond_error("only a draft assignment can be submitted", 400)
+    
+    # Submit the assignment if it's in the 'DRAFT' state
     submitted_assignment = Assignment.submit(
         _id=submit_assignment_payload.id,
         teacher_id=submit_assignment_payload.teacher_id,
