@@ -19,7 +19,6 @@ def ready():
         'status': 'ready',
         'time': helpers.get_utc_now()
     })
-
     return response
 
 

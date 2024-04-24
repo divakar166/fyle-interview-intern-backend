@@ -11,7 +11,6 @@ class AuthPrincipal:
         self.teacher_id = teacher_id
         self.principal_id = principal_id
 
-
 def accept_payload(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
@@ -32,7 +31,6 @@ def authenticate_principal(func):
             teacher_id=p_dict.get('teacher_id'),
             principal_id=p_dict.get('principal_id')
         )
-
         if request.path.startswith('/student'):
             assertions.assert_true(p.student_id is not None, 'requester should be a student')
         elif request.path.startswith('/teacher'):
